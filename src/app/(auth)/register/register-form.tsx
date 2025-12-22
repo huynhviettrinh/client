@@ -18,7 +18,6 @@ import {
   RegisterBodyType,
 } from "@/schemaValidations/auth.schema";
 import envConfig from "@/config";
-import { register } from "module";
 
 export default function RegisterForm() {
   const form = useForm<RegisterBodyType>({
