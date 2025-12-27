@@ -15,8 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import envConfig from "@/config";
+import { useAppContext } from "@/app/AppProvider";
 
 export default function LoginForm() {
+  const { setSessionToken } = useAppContext();
+
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -47,7 +50,27 @@ export default function LoginForm() {
         }
         return data;
       });
+
       toast.success(result.payload.message || "Đăng nhập thành công");
+
+      const resultFromServerNext = await fetch("/api/auth", {
+        method: "POST",
+        body: JSON.stringify(result),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then(async (res) => {
+        const payload = await res.json();
+        const data = {
+          status: res.status,
+          payload,
+        };
+        if (!res.ok) {
+          throw data;
+        }
+        return data;
+      });
+      setSessionToken(resultFromServerNext.payload.data.token);
     } catch (error: any) {
       const errors = error.payload.errors as {
         field: string;

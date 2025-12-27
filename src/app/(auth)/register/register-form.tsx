@@ -41,8 +41,6 @@ export default function RegisterForm() {
         },
       }
     ).then((res) => res.json());
-
-    console.log("Register result:", result);
   }
   return (
     <Form {...form}>
