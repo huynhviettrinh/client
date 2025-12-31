@@ -1,14 +1,13 @@
-
 export async function POST(request: Request) {
     const res = await request.json();
-    const sesstionToken = res.payload?.data?.token;
+    const sesstionToken = res.sessionToken as string;
     const expires = res.payload?.data?.expiresAt;
     if (!sesstionToken) {
         return Response.json({ message: "No session token" }, { status: 400 });
     }
 
     return Response.json(
-        res.payload,
+        res,
         {
             status: 200,
             headers: {
