@@ -5,15 +5,39 @@ type CustomOptions = Omit<RequestInit, "method"> & {
     baseUrl?: string | undefined;
 };
 
+const ENTITY_ERROR_STATUS = 422
 
-class HttpError extends Error {
+type EntityErrorPayload = {
+    message: string
+    errors: {
+        field: string
+        message: string
+    }[]
+
+}
+
+export class HttpError extends Error {
     status: number;
-    payload: any;
+    payload: {
+        message: string
+        [key: string]: any
+    };
     constructor({ status, payload }: { status: number; payload: any }) {
         super("http Error");
         this.status = status;
         this.payload = payload;
     }
+}
+
+export class EntityError extends HttpError {
+    status: 422
+    payload: EntityErrorPayload
+    constructor({ status, payload }: { status: 422; payload: EntityErrorPayload }) {
+        super({ status, payload })
+        this.status = status
+        this.payload = payload
+    }
+
 }
 
 class SessionToken {
@@ -50,6 +74,7 @@ const request = async <Response>(
         ? `${baseUrl}${url}`
         : `${baseUrl}/${url}`;
 
+    // fetch api
     const res = await fetch(fullUrl, {
         ...options,
 
@@ -60,13 +85,17 @@ const request = async <Response>(
         body,
         method,
     });
+
     const payload: Response = await res.json();
     const data = {
         status: res.status,
         payload,
     };
     if (!res.ok) {
-        throw new HttpError(data);
+        if (res.status === ENTITY_ERROR_STATUS) {
+            throw new EntityError(data as { status: 422, payload: EntityErrorPayload })
+        }
+
     }
 
     if (["/auth/login", "/auth/register"].includes(url)) {

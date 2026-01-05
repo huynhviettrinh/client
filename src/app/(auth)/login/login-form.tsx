@@ -16,9 +16,12 @@ import { Input } from "@/components/ui/input";
 import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import authApiRequest from "@/apiRequests/auth";
 import { useRouter } from "next/navigation";
+import { handleErrorApi } from "@/lib/utils";
+import { useState } from "react";
 
 export default function LoginForm() {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
@@ -29,6 +32,8 @@ export default function LoginForm() {
   });
 
   async function onSubmit(values: LoginBodyType) {
+    if (loading) return;
+    setLoading(true);
     try {
       const result = await authApiRequest.login(values);
       toast.success(result.payload.message || "Đăng nhập thành công");
@@ -37,26 +42,14 @@ export default function LoginForm() {
 
       router.push("/me");
     } catch (error: any) {
-      console.error(error);
-
-      const errors = error.payload.errors as {
-        field: string;
-        message: string;
-      }[];
-      const status = error.status as number;
-      if (status === 422) {
-        errors.forEach((e) => {
-          form.setError(e.field as "email" | "password", {
-            type: "server",
-            message: e.message,
-          });
-        });
-      } else {
-        toast.error(error.payload.message || "Đã có lỗi xảy ra");
-      }
+      handleErrorApi({
+        error,
+        setError: form.setError,
+      });
+    } finally {
+      setLoading(false);
     }
   }
-
   return (
     <Form {...form}>
       <form
