@@ -1,8 +1,8 @@
 export async function POST(request: Request) {
     const res = await request.json();
-    const sesstionToken = res.sessionToken as string;
+    const sessionToken = res.sessionToken as string;
     const expires = res.payload?.data?.expiresAt;
-    if (!sesstionToken) {
+    if (!sessionToken) {
         return Response.json({ message: "No session token" }, { status: 400 });
     }
 
@@ -11,7 +11,7 @@ export async function POST(request: Request) {
         {
             status: 200,
             headers: {
-                "Set-Cookie": `sessionToken=${sesstionToken}; Path=/;HttpOnly`,
+                "Set-Cookie": `sessionToken=${sessionToken}; Path=/;HttpOnly`,
             },
 
         }

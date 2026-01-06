@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+
 import { toast } from "sonner";
 import {
   Form,
@@ -39,15 +41,16 @@ export default function LoginForm() {
       toast.success(result.payload.message || "Đăng nhập thành công");
 
       await authApiRequest.auth({ sessionToken: result.payload.data.token });
-
-      router.push("/me");
     } catch (error: any) {
       handleErrorApi({
         error,
         setError: form.setError,
       });
     } finally {
-      setLoading(false);
+      await setTimeout(() => {
+        router.push("/me");
+        setLoading(false);
+      }, 1000);
     }
   }
   return (
@@ -84,6 +87,7 @@ export default function LoginForm() {
           )}
         />
         <Button type="submit" className="mt-8 w-full">
+          {loading ? <Spinner /> : ""}
           Login
         </Button>
       </form>

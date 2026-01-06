@@ -9,7 +9,9 @@ export default async function page() {
 
   const result = await accountApiRequest.me(sessionToken?.value || "");
 
-  return <div>
-    <Profile />
-  </div>;
+  return (
+    <div>
+      <Profile />
+    </div>
+  );
 }
