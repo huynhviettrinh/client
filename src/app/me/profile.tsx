@@ -22,12 +22,7 @@ export default function Profile() {
     fetchRequest();
   }, []);
 
-  const handleOnLick = async () => {
-    const res = await fetch("http://localhost:3000/api/auth/logout", {
-      headers: { "Content-Type": "application/json" },
-      method: "POST",
-    });
-  };
+  const handleOnLick = async () => {};
 
   return (
     <>

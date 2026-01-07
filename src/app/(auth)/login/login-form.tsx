@@ -47,10 +47,8 @@ export default function LoginForm() {
         setError: form.setError,
       });
     } finally {
-      await setTimeout(() => {
-        router.push("/me");
-        setLoading(false);
-      }, 1000);
+      setLoading(false);
+      router.push("/me");
     }
   }
   return (
@@ -87,7 +85,6 @@ export default function LoginForm() {
           )}
         />
         <Button type="submit" className="mt-8 w-full">
-          {loading ? <Spinner /> : ""}
           Login
         </Button>
       </form>
