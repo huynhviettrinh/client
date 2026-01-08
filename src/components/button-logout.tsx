@@ -12,6 +12,9 @@ export default function ButtonLogout() {
       router.push("/login");
     } catch (error) {
       handleErrorApi({ error });
+      authApiRequest.logoutNextClientToNextServer(true).then(() => {
+        router.push("/login");
+      });
     }
   };
 

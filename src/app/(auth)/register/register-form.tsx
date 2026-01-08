@@ -24,7 +24,7 @@ import { useState } from "react";
 
 export default function RegisterForm() {
   const router = useRouter();
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const form = useForm<RegisterBodyType>({
     resolver: zodResolver(RegisterBody),
     defaultValues: {
@@ -36,21 +36,24 @@ export default function RegisterForm() {
   });
 
   async function onSubmit(values: RegisterBodyType) {
-    if (loading) return
-    setLoading(true)
+    if (loading) return;
+    setLoading(true);
     try {
       const result = await authApiRequest.register(values);
       toast.success(result.payload.message || "Đăng ký thành công");
 
-      await authApiRequest.auth({ sessionToken: result.payload.data.token });
+      await authApiRequest.auth({
+        sessionToken: result.payload.data.token,
+        expiresAt: result.payload.data.expiresAt,
+      });
       router.push("/me");
     } catch (error: any) {
       handleErrorApi({
         error,
-        setError: form.setError
-      })
+        setError: form.setError,
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 

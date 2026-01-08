@@ -49,6 +49,7 @@ export class EntityError extends HttpError {
 
 class SessionToken {
   private token = "";
+  private _expiresAt = new Date().toISOString();
   get value() {
     return this.token;
   }
@@ -57,6 +58,16 @@ class SessionToken {
       throw new Error("Cannot set session token on server side");
     }
     this.token = token;
+  }
+
+  get expiresAt() {
+    return this._expiresAt;
+  }
+  set expiresAt(_expiresAt: string) {
+    if (typeof window === "undefined") {
+      throw new Error("Cannot set session token on server side");
+    }
+    this._expiresAt = _expiresAt;
   }
 }
 
@@ -106,7 +117,7 @@ const request = async <Response>(
       throw new EntityError(
         data as { status: 422; payload: EntityErrorPayload }
       );
-      //   status 401 ve sessionToken
+      //   status 401 loi ve sessionToken
     } else if (res.status === AUTHENTICATION_ERROR_STATUS) {
       if (typeof window !== "undefined") {
         await fetch("api/auth/logout", {
@@ -117,6 +128,7 @@ const request = async <Response>(
           },
         });
         clientSessionToken.value = "";
+        clientSessionToken.expiresAt = new Date().toISOString();
         location.href = "/login";
       } else {
         const sessionToken = (options?.headers as any)?.Authorization.split(
@@ -136,8 +148,12 @@ const request = async <Response>(
       )
     ) {
       clientSessionToken.value = (payload as RegisterResType).data.token;
+      clientSessionToken.expiresAt = (
+        payload as RegisterResType
+      ).data.expiresAt;
     } else if ("auth/logout" === normalizePath(url)) {
       clientSessionToken.value = "";
+      clientSessionToken.expiresAt = new Date().toISOString();
     }
   }
 

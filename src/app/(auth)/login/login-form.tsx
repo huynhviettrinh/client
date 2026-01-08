@@ -40,7 +40,10 @@ export default function LoginForm() {
       const result = await authApiRequest.login(values);
       toast.success(result.payload.message || "Đăng nhập thành công");
 
-      await authApiRequest.auth({ sessionToken: result.payload.data.token });
+      await authApiRequest.auth({
+        sessionToken: result.payload.data.token,
+        expiresAt: result.payload.data.expiresAt,
+      });
     } catch (error: any) {
       handleErrorApi({
         error,
