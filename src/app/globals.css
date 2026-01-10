@@ -121,6 +121,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    padding-left: 12px;
+    padding-top: 12px;
   }
 }
 @layer base {

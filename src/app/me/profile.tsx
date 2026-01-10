@@ -4,23 +4,29 @@ import { clientSessionToken } from "@/lib/http";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export default function Profile() {
-  type dataUser = {
-    name: string;
-    email: string;
-  };
+export default function Profile({
+  name,
+  email,
+}: {
+  name: string;
+  email: string;
+}) {
+  // type dataUser = {
+  //   name: string;
+  //   email: string;
+  // };
 
-  const [dataUser, setDataUser] = useState<dataUser>();
+  // const [dataUser, setDataUser] = useState<dataUser>();
 
-  useEffect(() => {
-    const fetchRequest = async () => {
-      const result = await accountApiRequest.me(
-        clientSessionToken?.value || ""
-      );
-      setDataUser(result.payload.data);
-    };
-    fetchRequest();
-  }, []);
+  // useEffect(() => {
+  //   const fetchRequest = async () => {
+  //     const result = await accountApiRequest.me(
+  //       clientSessionToken?.value || ""
+  //     );
+  //     setDataUser(result.payload.data);
+  //   };
+  //   fetchRequest();
+  // }, []);
 
   const handleOnLick = async () => {};
 
@@ -29,7 +35,7 @@ export default function Profile() {
       <Button variant="outline" onClick={handleOnLick}>
         Button
       </Button>
-      <div>{`name: ${dataUser?.name} email: ${dataUser?.email}`}</div>
+      <div>{`name: ${name} email: ${email}`}</div>
     </>
   );
 }
