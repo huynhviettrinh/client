@@ -20,6 +20,11 @@ export default function Header() {
         <li>
           <ButtonLogout />
         </li>
+        <li>
+          <Link rel="stylesheet" href="/products">
+            List product
+          </Link>
+        </li>
       </ul>
       <ModeToggle />
     </div>

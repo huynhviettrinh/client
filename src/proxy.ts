@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 
 const privatePaths = ["/me"];
 const authPaths = ["/login", "/register"];
+const productPaths = ["/products"];
 
 // This function can be marked `async` if using `await` inside
 export function proxy(request: NextRequest) {
@@ -14,9 +15,12 @@ export function proxy(request: NextRequest) {
   if (authPaths.some((path) => pathname.startsWith(path)) && sessionToken) {
     return NextResponse.redirect(new URL("/me", request.url));
   }
+  if (productPaths.some((path) => pathname.startsWith(path)) && !sessionToken) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/me", "/login", "/register"],
+  matcher: ["/me", "/login", "/register", "/products"],
 };
