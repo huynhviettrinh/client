@@ -56,7 +56,6 @@ export default function RegisterForm() {
         sessionToken: result.payload.data.token,
         expiresAt: result.payload.data.expiresAt,
       });
-      router.push("/me");
     } catch (error: any) {
       handleErrorApi({
         error,
@@ -64,6 +63,8 @@ export default function RegisterForm() {
       });
     } finally {
       setLoading(false);
+      router.push("/");
+      router.refresh();
     }
   }
 

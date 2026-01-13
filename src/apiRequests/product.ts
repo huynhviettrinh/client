@@ -22,6 +22,9 @@ const productApiResquest = {
       message: string;
       data: string;
     }>("/media/upload", body),
+
+  deleteProduct: (id: number) =>
+    http.delete<{ message: string }>(`/products/${id}`),
 };
 
 export default productApiResquest;

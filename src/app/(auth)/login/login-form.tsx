@@ -59,7 +59,8 @@ export default function LoginForm() {
       });
     } finally {
       setLoading(false);
-      router.push("/me");
+      router.push("/");
+      router.refresh();
     }
   }
   return (

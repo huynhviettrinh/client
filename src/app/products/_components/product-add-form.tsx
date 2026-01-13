@@ -76,7 +76,7 @@ export default function ProductAddForm({ product }: { product?: Product }) {
         );
         toast(result.payload.message);
       }
-      // router.push("/products");
+      router.push("/products");
     } catch (error: any) {
       handleErrorApi({
         error,
