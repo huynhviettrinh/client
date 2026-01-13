@@ -20,15 +20,19 @@ import { useRef, useState } from "react";
 import {
   CreateProductBody,
   CreateProductBodyType,
+  ProductResType,
 } from "@/schemaValidations/product.schema";
 import productApiResquest from "@/apiRequests/product";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
-import { clientSessionToken } from "@/lib/http";
 
-export default function ProductAddForm() {
+type Product = ProductResType["data"];
+
+export default function ProductAddForm({ product }: { product?: Product }) {
   const [file, setFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    product?.image! || null
+  );
 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -37,10 +41,10 @@ export default function ProductAddForm() {
   const form = useForm<CreateProductBodyType>({
     resolver: zodResolver(CreateProductBody),
     defaultValues: {
-      name: "",
-      price: 0,
-      description: "",
-      image: "",
+      name: product?.name ?? "",
+      price: product?.price ?? 0,
+      description: product?.description ?? "",
+      image: product?.image ?? "",
     },
   });
 
@@ -48,16 +52,31 @@ export default function ProductAddForm() {
     if (loading) return;
     setLoading(true);
     try {
-      const formData = new FormData();
-      formData.append("file", file as Blob);
-      const uploadImage = await productApiResquest.uploadImage(formData);
-      const imageUrl = uploadImage.payload.data;
-      const result = await productApiResquest.createProduct({
-        ...values,
-        image: imageUrl,
-      });
-      console.log(result);
-      router.push("/products");
+      let imageUrl = "";
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file as Blob);
+        const uploadImage = await productApiResquest.uploadImage(formData);
+        imageUrl = uploadImage.payload.data;
+      }
+
+      if (!product) {
+        const result = await productApiResquest.createProduct({
+          ...values,
+          image: imageUrl,
+        });
+        toast(result.payload.message);
+      } else {
+        if (imageUrl) {
+          values.image = imageUrl;
+        }
+        const result = await productApiResquest.updateProduct(
+          product.id,
+          values
+        );
+        toast(result.payload.message);
+      }
+      // router.push("/products");
     } catch (error: any) {
       handleErrorApi({
         error,
@@ -67,14 +86,18 @@ export default function ProductAddForm() {
       setLoading(false);
     }
   }
+
   const handleRemoveImage = () => {
-    setFile(null);
-    setPreviewUrl(null);
+    setFile(() => null);
+    setPreviewUrl(() => null);
 
     // reset input file
     if (inputRef.current) {
       inputRef.current.value = "";
-      form.setValue("image", "", { shouldValidate: true });
+      //fake set url de pass qua zod
+      form.setValue("image", "", {
+        shouldValidate: true,
+      });
     }
   };
 
@@ -139,14 +162,17 @@ export default function ProductAddForm() {
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
-                    if (!file.type.startsWith("image/")) {
-                      alert("Chỉ được chọn file ảnh");
-                      return;
-                    }
                     if (file) {
                       setFile(file);
                       setPreviewUrl(URL.createObjectURL(file));
                       field.onChange("http://localhost:3000/" + file.name);
+                      form.setValue(
+                        "image",
+                        "http://localhost:3000/" + file.name,
+                        {
+                          shouldValidate: true,
+                        }
+                      );
                     }
                   }}
                 />
@@ -155,10 +181,11 @@ export default function ProductAddForm() {
             </FormItem>
           )}
         />
-        {file && (
+        {(file || previewUrl) && (
           <div>
             <Image
-              src={previewUrl ? previewUrl : ""}
+              priority
+              src={previewUrl ?? ""}
               alt="preview"
               width={128}
               height={128}
@@ -173,8 +200,13 @@ export default function ProductAddForm() {
             </Button>
           </div>
         )}
-        <Button type="submit" className="mt-8 w-full">
-          Add product
+
+        <Button
+          type="submit"
+          className="mt-8 w-full"
+          disabled={!form.formState.isDirty}
+        >
+          {product ? "Save" : "Add product"}
         </Button>
       </form>
     </Form>

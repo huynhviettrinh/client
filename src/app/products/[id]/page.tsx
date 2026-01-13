@@ -1,6 +1,6 @@
 import productApiResquest from "@/apiRequests/product";
+import ProductAddForm from "@/app/products/_components/product-add-form";
 import { HttpError } from "@/lib/http";
-import { toast } from "sonner";
 
 export default async function ProductEdit({
   params,
@@ -18,5 +18,10 @@ export default async function ProductEdit({
     }
   }
 
-  return <div>{!productDetail && <>Not found any product</>}</div>;
+  return (
+    <div>
+      {!productDetail && <>Not found any product</>}
+      {productDetail && <ProductAddForm product={productDetail} />}
+    </div>
+  );
 }
