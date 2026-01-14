@@ -22,9 +22,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
 import productApiResquest from "@/apiRequests/product";
 import { toast } from "sonner";
+import { useAppContext } from "@/app/app-provider";
+import { Link } from "lucide-react";
 
 export function ProductCard({
   id,
@@ -46,10 +47,14 @@ export function ProductCard({
 
     router.refresh();
   };
+  const { user } = useAppContext();
 
   return (
     <Card className="flex flex-col h-full">
-      <CardHeader>
+      <CardHeader
+        className="cursor-pointer"
+        onClick={() => router.push(`products/${id}`)}
+      >
         <Image
           priority
           src={image}
@@ -60,7 +65,10 @@ export function ProductCard({
         />
       </CardHeader>
 
-      <CardContent className="flex-1 p-2">
+      <CardContent
+        className="flex-1 p-2 cursor-pointer"
+        onClick={() => router.push(`products/${id}`)}
+      >
         <CardTitle className="text-lg">{name}</CardTitle>
         <p className="text-red-500 font-semibold">{price}₫</p>
         <CardDescription className="mt-1 line-clamp-2">
@@ -69,19 +77,24 @@ export function ProductCard({
       </CardContent>
 
       <CardFooter className="mt-auto p-2">
-        <Button
-          className="w-[45%]"
-          variant="secondary"
-          onClick={() => router.push(`/products/${id}`)}
-        >
-          Edit
-        </Button>
+        {user && (
+          <Button
+            className="w-[45%]"
+            variant="secondary"
+            onClick={() => router.push(`/products/edit/${id}`)}
+          >
+            Edit
+          </Button>
+        )}
         <div className="w-[10%]"></div>
+
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="destructive" className="w-[45%]">
-              Delete
-            </Button>
+            {user && (
+              <Button variant="destructive" className="w-[45%]">
+                Delete
+              </Button>
+            )}
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>

@@ -28,11 +28,12 @@ import authApiRequest from "@/apiRequests/auth";
 import { useRouter } from "next/navigation";
 import { handleErrorApi } from "@/lib/utils";
 import { useState } from "react";
+import { useAppContext } from "@/app/app-provider";
 
 export default function LoginForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
+  const { user, setUser } = useAppContext();
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -40,13 +41,14 @@ export default function LoginForm() {
       password: "",
     },
   });
-
   async function onSubmit(values: LoginBodyType) {
     if (loading) return;
     setLoading(true);
     try {
       const result = await authApiRequest.login(values);
       toast.success(result.payload.message || "Đăng nhập thành công");
+      const user = result.payload.data.account;
+      setUser(user);
 
       await authApiRequest.auth({
         sessionToken: result.payload.data.token,
@@ -63,6 +65,8 @@ export default function LoginForm() {
       router.refresh();
     }
   }
+  console.log(user);
+
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>

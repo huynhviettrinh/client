@@ -1,8 +1,8 @@
 import productApiResquest from "@/apiRequests/product";
+import ProductAddForm from "@/app/products/_components/product-add-form";
 import { HttpError } from "@/lib/http";
-import Image from "next/image";
 
-export default async function ProductDetail({
+export default async function ProductEdit({
   params,
 }: {
   params: { id: string };
@@ -20,16 +20,8 @@ export default async function ProductDetail({
 
   return (
     <div>
-      <Image
-        alt="detail"
-        width={128}
-        height={128}
-        className="w-32 h-32 object-cover"
-        src={productDetail ? productDetail?.image : ""}
-      />
-      <p>Name: {productDetail?.name}</p>
-      <p>Price: {productDetail?.price}</p>
-      <p>Description: {productDetail?.description}</p>
+      {!productDetail && <>Not found any product</>}
+      {productDetail && <ProductAddForm product={productDetail} />}
     </div>
   );
 }

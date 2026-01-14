@@ -28,14 +28,12 @@ export default function Profile({
   //   fetchRequest();
   // }, []);
 
-  const handleOnLick = async () => {};
-
   return (
     <>
-      <Button variant="outline" onClick={handleOnLick}>
-        Button
-      </Button>
-      <div>{`name: ${name} email: ${email}`}</div>
+      <div className="mt-2 mb-5">
+        <p>{`Name: ${name}`}</p>
+        <p>{`Email: ${email}`}</p>
+      </div>
     </>
   );
 }
